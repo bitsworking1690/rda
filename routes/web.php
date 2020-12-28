@@ -27,3 +27,7 @@ Route::resource('place' , 'PlaceController');
 Route::resource('hfacility' , 'HealthFacilityController');
 Route::resource('pgeometry' , 'PlaceGeometryController');
 
+/* Routes for Exports/Imports */
+Route::get('export/{province}/{type}', 'PlaceController@export')->name('export');
+Route::get('importExportView', 'PlaceController@importExportView');
+Route::post('import', 'PlaceController@import')->name('import');

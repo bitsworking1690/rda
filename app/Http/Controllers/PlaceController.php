@@ -3,10 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+
+/* Using other models for accessing these */
 use App\Place;
 use App\HealthFacility;
 use App\PlaceBoundary;
 use DB;
+
+/* Using exports */
+use App\Exports\PlacesExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PlaceController extends Controller
 {
@@ -17,6 +23,57 @@ class PlaceController extends Controller
     }
 
     /**
+     * Export places data.
+     */
+    public function export($province_id,$place_type)
+    {
+        $pakistan_provinces = array(1=>'AJK',
+                                    2=>'Baluchistan',
+                                    3=>'FATA',
+                                    4=>'GB',
+                                    5=>'ICT',
+                                    6=>'KPK',
+                                    7=>'Punjab',
+                                    8=>'Sindh',
+                                );
+        // return Excel::download(new PlacesExport , 'places.xlsx');
+        
+        // passing filtered data for downloading
+        if($place_type == 'all'){
+            $places = Place::where('province_id',$province_id)->get();
+        }else{
+            $places = Place::where('province_id',$province_id)->where('place_type' , $place_type)->get(['place_name',
+            'place_name_urdu',
+            'place_short_name',
+            'place_alt_spellings',
+            'place_code',
+            'place_lat_long',
+            'place_type',
+            'place_name_filter',
+            'province_id',
+            'division_id',
+            'district_id',
+            'tehsil_id',
+            'uc_id',
+            'village_id',
+            'province_name',
+            'division_name',
+            'district_name',
+            'tehsil_name',
+            'uc_name',
+            'village_name',]);
+        }
+
+        /* converting eloquent collections to array */
+        $places_filtered = array();
+        foreach($places as $place){
+            array_push($places_filtered ,$place);
+        }
+        $export = new PlacesExport($places_filtered);
+        return Excel::download($export , strtolower($pakistan_provinces[$province_id]).'_'.$place_type.'s.xlsx');
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -24,7 +81,6 @@ class PlaceController extends Controller
     public function index()
     {
         $places = Place::simplePaginate(20);
-        // echo '<pre>';   print_r($places);    die;
         return view('places.index' , compact('places'));
     }
 
@@ -194,5 +250,9 @@ class PlaceController extends Controller
             return $result_set;
         }
     }
+
+    /*
+
+    */
 
 }//class-ends
