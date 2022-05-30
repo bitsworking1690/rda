@@ -210,11 +210,12 @@
                         </div>
                     @endif
                     <!-- Filters -->
-                    <form method="post" action="{{ route('place.store') }}">
+                    <form method="post" action="{{ route('listing') }}">
+                        @csrf
                         <div class="row">
                           <div class="col-md-2">
                             <label for="country"><strong>Province</strong></label>
-                            <select class="custom-select d-block w-100" id="country" required>
+                            <select class="custom-select d-block w-100" id="province" name="province" required>
                               <option value="">Choose...</option>
                               <option value="province">ICT</option>
                               <option value="division">Punjab</option>
@@ -228,8 +229,7 @@
 
                           <div class="col-md-2">
                             <label for="country"><strong>Place Type</strong></label>
-                            <select class="custom-select d-block w-100" id="country" required>
-                              <option value="">Choose...</option>
+                            <select id="geo_places" name="place_type" class="" multiple="multiple">
                               <option value="division">Divisions</option>
                               <option value="district">Districts</option>
                               <option value="tehsil">Tehsils</option>
@@ -302,4 +302,5 @@
         </div>
     </div>
 </div>
+
 @endsection

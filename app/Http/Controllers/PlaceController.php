@@ -69,7 +69,9 @@ class PlaceController extends Controller
         foreach($places as $place){
             array_push($places_filtered ,$place);
         }
+        
         $export = new PlacesExport($places_filtered);
+        // echo '<pre>';   print_r($export);  die;
         return Excel::download($export , strtolower($pakistan_provinces[$province_id]).'_'.$place_type.'s.xlsx');
     }
 
@@ -78,9 +80,23 @@ class PlaceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $places = Place::simplePaginate(20);
+        // request params
+        // echo $request->post('province');  die;
+        $places = Place::whereIn('province_id',array(1,7))->whereIn('place_type',array('district','division'))->simplePaginate(20);
+        return view('places.index' , compact('places'));
+    }
+
+    public function listing(Request $request)
+    {
+        // request params
+        // echo '<pre>';    print_r($request->post());  die;
+        $places = Place::where('province_id',7)->whereIn('place_type',array('district','division'))->simplePaginate(20);
+
+        // $province_id = $request->post('province');
+        // $place_type = $request->post('place_type');
+        // $places = Place::where('province_id',$province_id)->whereIn('place_type',$place_type)->simplePaginate(20);
         return view('places.index' , compact('places'));
     }
 
